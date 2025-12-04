@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: hands-on
+  labels:
+    app: minha-app
+spec:
+  type: ClusterIP  # Tipo de serviço (ClusterIP = acesso interno)
+  selector:
+    app: minha-app
+  ports:
+  - protocol: TCP
+    port: 80        # Porta do serviço
+    targetPort: 80  # Porta do container
+    name: http
+

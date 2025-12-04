@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: hands-on
+data:
+  # Dados de configuração em formato chave-valor
+  APP_NAME: "Minha Aplicação Kubernetes"
+  APP_ENV: "production"
+  LOG_LEVEL: "info"
+  MAX_CONNECTIONS: "100"
+  # Configuração em formato de arquivo
+  config.properties: |
+    server.port=8080
+    database.host=db.example.com
+    cache.enabled=true
+

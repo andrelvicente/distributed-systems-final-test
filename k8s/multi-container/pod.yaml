@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-container-pod
+  namespace: hands-on
+  labels:
+    app: multi-container
+spec:
+  containers:
+  # Container 1: Aplicação principal
+  - name: app-container
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+    - name: app-logs
+      mountPath: /var/log/nginx
+
+  # Container 2: Sidecar para processar logs
+  - name: log-processor
+    image: busybox:latest
+    command: ['sh', '-c', 'tail -f /var/log/nginx/access.log']
+    volumeMounts:
+    - name: app-logs
+      mountPath: /var/log/nginx
+
+  # Container 3: Container de inicialização (init container)
+  - name: init-container
+    image: busybox:latest
+    command: ['sh', '-c', 'echo "Inicializando..." > /shared/index.html']
+    volumeMounts:
+    - name: shared-data
+      mountPath: /shared
+
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+  - name: app-logs
+    emptyDir: {}
+

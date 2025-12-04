@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Serviço 1: Aplicação Web
+  web:
+    build: ./web
+    container_name: app-web
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/mydb
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # Serviço 2: Banco de Dados PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: app-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    ports:
+      - "5432:5432"
+
+  # Serviço 3: Redis (Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: app-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+# Volumes nomeados (persistência de dados)
+volumes:
+  db-data:
+
+# Redes (comunicação entre containers)
+networks:
+  app-network:
+    driver: bridge
+

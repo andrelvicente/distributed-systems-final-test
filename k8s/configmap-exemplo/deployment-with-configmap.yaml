@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-with-configmap
+  namespace: hands-on
+  labels:
+    app: app-configmap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-configmap
+  template:
+    metadata:
+      labels:
+        app: app-configmap
+    spec:
+      containers:
+      - name: app-container
+        image: busybox:latest
+        command: ['sh', '-c', 'echo "APP_NAME: $APP_NAME" && echo "APP_ENV: $APP_ENV" && sleep 3600']
+        env:
+        # Variáveis de ambiente individuais do ConfigMap
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_NAME
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+        # Ou carregar todas as variáveis do ConfigMap
+        envFrom:
+        - configMapRef:
+            name: app-config
+        # Volume para arquivos de configuração
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: app-config
+
