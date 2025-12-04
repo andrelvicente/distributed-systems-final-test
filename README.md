@@ -47,9 +47,9 @@ Este hands-on tem como objetivo:
 
 ## 👥 Autores
 
-- André Luiz Vicente Silva
-- Fernando Guimarães Silva
-- Maria Eduarda Silva Faria
+- [André Luiz Vicente Silva](https://github.com/andrelvicente) - [@andrelvicente](https://github.com/andrelvicente)
+- [Fernando Guimarães Silva](https://github.com/Fernandofgs91) - [@Fernandofgs91](https://github.com/Fernandofgs91)
+- [Maria Eduarda Silva Faria](https://github.com/madu-silva) - [@madu-silva](https://github.com/madu-silva)
 - Victor Hugo Fernandes Silva
 
 Grupo de Sistemas Distribuídos - IFTM
