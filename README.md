@@ -47,10 +47,14 @@ Este hands-on tem como objetivo:
 
 ## 👥 Autores
 
+### Professor Orientador
+- [Carlos Eduardo](https://github.com/carloseduardoxp) - [@carloseduardoxp](https://github.com/carloseduardoxp)
+
+### Alunos
 - [André Luiz Vicente Silva](https://github.com/andrelvicente) - [@andrelvicente](https://github.com/andrelvicente)
 - [Fernando Guimarães Silva](https://github.com/Fernandofgs91) - [@Fernandofgs91](https://github.com/Fernandofgs91)
 - [Maria Eduarda Silva Faria](https://github.com/madu-silva) - [@madu-silva](https://github.com/madu-silva)
-- Victor Hugo Fernandes Silva
+- [Victor Hugo Fernandes Silva](https://github.com/VHFS) - [@VHFS](https://github.com/VHFS)
 
 Grupo de Sistemas Distribuídos - IFTM
 
