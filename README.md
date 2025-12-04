@@ -1,4 +1,4 @@
-# Trabalho de Sistemas Distribuídos - Docker e Kubernetes
+# Virtualização e Contêineres em Sistemas Distribuídos
 
 **Disciplina:** Sistemas Distribuídos  
 **Curso:** Tecnólogo em Sistemas para Internet  
