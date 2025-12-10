@@ -1,49 +1,167 @@
+# ============================================
+# docker-compose.yml
+# ============================================
+# Este arquivo define múltiplos containers que trabalham juntos
+# É como um "orquestrador" que gerencia vários containers ao mesmo tempo
+
 version: '3.8'
 
+# Seção de serviços (containers)
 services:
-  # Serviço 1: Aplicação Web
+  # SERVIÇO 1: Aplicação Web
+  # Este é o nosso servidor web (aplicação Python)
   web:
+    # Construir a imagem a partir do Dockerfile na pasta ./web
     build: ./web
+    # Nome do container (opcional, mas facilita identificar)
     container_name: app-web
+    # Mapear porta: porta_do_host:porta_do_container
+    # Acessamos no host pela porta 5000, que redireciona para 5000 do container
     ports:
       - "5000:5000"
+    # Variáveis de ambiente (configurações que a aplicação usa)
     environment:
       - DATABASE_URL=postgresql://user:password@db:5432/mydb
+    # Este serviço depende do serviço "db" estar rodando primeiro
     depends_on:
       - db
+    # Conectar à mesma rede para poder se comunicar
     networks:
       - app-network
+    # ============================================
+    # ESTRATÉGIA DE RESTART (Política de Reinicialização)
+    # ============================================
+    # Define o que fazer quando o container para ou falha
+    restart: unless-stopped
+    # 
+    # OPÇÕES DISPONÍVEIS:
+    # 
+    # "no" (padrão)
+    #   - NÃO reinicia automaticamente
+    #   - Útil para containers que você quer controlar manualmente
+    #   - Exemplo: restart: "no"
+    #
+    # "always"
+    #   - SEMPRE reinicia, mesmo se você parar manualmente
+    #   - Reinicia automaticamente quando o Docker daemon reinicia
+    #   - Útil para serviços críticos que devem estar sempre rodando
+    #   - Exemplo: restart: "always"
+    #
+    # "on-failure"
+    #   - Reinicia APENAS se o container sair com código de erro (não zero)
+    #   - NÃO reinicia se você parar manualmente
+    #   - Útil para aplicações que podem falhar ocasionalmente
+    #   - Exemplo: restart: "on-failure"
+    #   - Você pode especificar quantas vezes tentar: restart: "on-failure:3"
+    #
+    # "unless-stopped" (RECOMENDADO para produção)
+    #   - Reinicia automaticamente, EXCETO se você parar manualmente
+    #   - Reinicia quando o Docker daemon reinicia
+    #   - Se você fizer "docker compose stop", ele NÃO reinicia sozinho
+    #   - Melhor equilíbrio entre controle e resiliência
+    #   - Exemplo: restart: "unless-stopped"
+    # ============================================
+    # GERENCIAMENTO DE RECURSOS (CPU e Memória)
+    # ============================================
+    # Limita o uso de recursos do hardware para evitar que um container
+    # consuma todos os recursos da máquina
+    deploy:
+      resources:
+        limits:
+          # Limite máximo de CPU que este container pode usar
+          # 1 core = 1000m (millicores)
+          # 300m = 30% de 1 core
+          cpus: '0.3'        # Máximo: 30% de 1 core
+          # Limite máximo de memória RAM
+          # 256MB para a aplicação web (deixa espaço para outros serviços)
+          memory: 256M
+        reservations:
+          # Recursos garantidos (reservados) para este container
+          # O Docker garante que este container terá pelo menos estes recursos
+          cpus: '0.1'        # Mínimo garantido: 10% de 1 core
+          memory: 128M       # Mínimo garantido: 128MB de RAM
+    #
+    # EXPLICAÇÃO DOS RECURSOS:
+    # 
+    # Para uma máquina com 1GB RAM e 1 core:
+    # - Total disponível: 1024MB RAM e 1000m CPU
+    # - Sistema operacional e Docker: ~256MB RAM e ~200m CPU
+    # - Sobra para containers: ~768MB RAM e ~800m CPU
+    #
+    # Distribuição:
+    # - Web: 256MB RAM / 300m CPU (máximo) | 128MB RAM / 100m CPU (mínimo)
+    # - DB: 512MB RAM / 500m CPU (máximo) | 256MB RAM / 200m CPU (mínimo)
+    # - Total usado: 768MB RAM / 800m CPU (deixa margem de segurança)
+    #
+    # UNIDADES:
+    # - CPU: '0.3' = 30% de 1 core, ou '300m' = 300 millicores
+    # - Memória: '256M' = 256 Megabytes, '1G' = 1 Gigabyte
+    # - Você pode usar: K (kilobytes), M (megabytes), G (gigabytes)
 
-  # Serviço 2: Banco de Dados PostgreSQL
+  # SERVIÇO 2: Banco de Dados PostgreSQL
+  # Este é o banco de dados que nossa aplicação vai usar
   db:
+    # Usar uma imagem pronta do PostgreSQL (não precisa construir)
     image: postgres:15-alpine
     container_name: app-db
+    # Configurações do banco de dados
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=mydb
+      - POSTGRES_USER=user          # Usuário do banco
+      - POSTGRES_PASSWORD=password  # Senha do banco
+      - POSTGRES_DB=mydb            # Nome do banco de dados
+    # Volume para persistir os dados (não perde quando o container para)
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
       - app-network
+    # Expor a porta do banco (opcional, para acessar de fora)
     ports:
       - "5432:5432"
+    # Estratégia de restart para o banco de dados
+    # "always" é recomendado para bancos de dados (serviço crítico)
+    restart: always
+    # 
+    # Para este serviço, usamos "always" porque:
+    # - Banco de dados é um serviço crítico
+    # - Queremos que ele reinicie automaticamente sempre
+    # - Garante disponibilidade mesmo após reinicializações do sistema
+    # ============================================
+    # GERENCIAMENTO DE RECURSOS (CPU e Memória)
+    # ============================================
+    # Banco de dados precisa de mais recursos que a aplicação web
+    deploy:
+      resources:
+        limits:
+          # Limite máximo de CPU
+          # 500m = 50% de 1 core (banco precisa de mais processamento)
+          cpus: '0.5'        # Máximo: 50% de 1 core
+          # Limite máximo de memória RAM
+          # 512MB para o banco de dados (maior que a web)
+          memory: 512M
+        reservations:
+          # Recursos garantidos (reservados) para o banco
+          # Banco de dados precisa de recursos garantidos para funcionar bem
+          cpus: '0.2'        # Mínimo garantido: 20% de 1 core
+          memory: 256M       # Mínimo garantido: 256MB de RAM
+    #
+    # NOTA: Banco de dados geralmente precisa de mais recursos porque:
+    # - Processa consultas SQL
+    # - Gerencia cache em memória
+    # - Faz operações de I/O (leitura/escrita em disco)
+    # - Mantém conexões ativas
 
-  # Serviço 3: Redis (Cache)
-  redis:
-    image: redis:7-alpine
-    container_name: app-redis
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
-
-# Volumes nomeados (persistência de dados)
+# ============================================
+# VOLUMES - Armazenamento persistente
+# ============================================
+# Os volumes guardam dados mesmo quando o container é removido
 volumes:
-  db-data:
+  db-data:  # Nome do volume (criado automaticamente)
 
-# Redes (comunicação entre containers)
+# ============================================
+# NETWORKS - Rede para comunicação
+# ============================================
+# Containers na mesma rede podem se comunicar pelo nome do serviço
 networks:
   app-network:
-    driver: bridge
+    driver: bridge  # Tipo de rede (padrão)
 

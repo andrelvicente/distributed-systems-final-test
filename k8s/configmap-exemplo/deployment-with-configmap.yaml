@@ -1,3 +1,9 @@
+# ============================================
+# Deployment que usa ConfigMap
+# ============================================
+# Este exemplo mostra como usar variáveis de ambiente
+# vindas de um ConfigMap (arquivo de configuração)
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,35 +23,35 @@ spec:
     spec:
       containers:
       - name: app-container
+        # Busybox é uma imagem muito simples, só para demonstração
         image: busybox:latest
-        command: ['sh', '-c', 'echo "APP_NAME: $APP_NAME" && echo "APP_ENV: $APP_ENV" && sleep 3600']
+        # Comando que será executado quando o container iniciar
+        # Mostra as variáveis de ambiente e depois fica "dormindo"
+        command: ['sh', '-c', 'echo "=== Variáveis do ConfigMap ===" && echo "APP_NAME: $APP_NAME" && echo "APP_ENV: $APP_ENV" && echo "LOG_LEVEL: $LOG_LEVEL" && sleep 3600']
+        
+        # FORMA 1: Carregar variáveis individuais do ConfigMap
         env:
-        # Variáveis de ambiente individuais do ConfigMap
         - name: APP_NAME
           valueFrom:
             configMapKeyRef:
-              name: app-config
-              key: APP_NAME
+              name: app-config    # Nome do ConfigMap
+              key: APP_NAME       # Chave específica que queremos
+        
         - name: APP_ENV
           valueFrom:
             configMapKeyRef:
               name: app-config
               key: APP_ENV
+        
         - name: LOG_LEVEL
           valueFrom:
             configMapKeyRef:
               name: app-config
               key: LOG_LEVEL
-        # Ou carregar todas as variáveis do ConfigMap
+        
+        # FORMA 2: Carregar TODAS as variáveis do ConfigMap de uma vez
+        # (mais simples, mas carrega tudo)
         envFrom:
         - configMapRef:
             name: app-config
-        # Volume para arquivos de configuração
-        volumeMounts:
-        - name: config-volume
-          mountPath: /etc/config
-      volumes:
-      - name: config-volume
-        configMap:
-          name: app-config
 

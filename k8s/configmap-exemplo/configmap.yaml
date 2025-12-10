@@ -1,17 +1,19 @@
+# ============================================
+# ConfigMap - Armazena configurações
+# ============================================
+# Um ConfigMap é como um "arquivo de configuração" do Kubernetes
+# Guarda dados que não são sensíveis (para dados sensíveis use Secrets)
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: app-config
-  namespace: hands-on
+  name: app-config      # Nome do ConfigMap
+  namespace: hands-on   # Namespace onde será criado
 data:
-  # Dados de configuração em formato chave-valor
+  # Dados em formato chave-valor (simples e direto)
+  # Essas variáveis podem ser usadas dentro dos containers
   APP_NAME: "Minha Aplicação Kubernetes"
   APP_ENV: "production"
   LOG_LEVEL: "info"
   MAX_CONNECTIONS: "100"
-  # Configuração em formato de arquivo
-  config.properties: |
-    server.port=8080
-    database.host=db.example.com
-    cache.enabled=true
 

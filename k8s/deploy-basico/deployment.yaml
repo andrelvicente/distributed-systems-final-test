@@ -1,47 +1,38 @@
-apiVersion: apps/v1
-kind: Deployment
+# ============================================
+# Deployment - Define como nossa aplicação será executada
+# ============================================
+# Um Deployment gerencia Pods (containers) e garante que sempre
+# tenhamos o número desejado rodando
+
+apiVersion: apps/v1  # Versão da API do Kubernetes
+kind: Deployment      # Tipo de recurso: Deployment
 metadata:
-  name: app-deployment
-  namespace: hands-on
+  name: app-deployment  # Nome do nosso deployment
+  namespace: hands-on    # Namespace onde será criado
   labels:
-    app: minha-app
-    version: v1
+    app: minha-app       # Rótulo para identificar este recurso
 spec:
-  # Número de réplicas (instâncias) do Pod
-  replicas: 2
+  # Quantas cópias (réplicas) da aplicação queremos rodar
+  # Começamos com 1 para simplificar
+  replicas: 1
+  
+  # Seletor: quais Pods este Deployment gerencia
   selector:
     matchLabels:
-      app: minha-app
+      app: minha-app  # Gerencia Pods com este rótulo
+  
+  # Template: como criar os Pods
   template:
     metadata:
       labels:
-        app: minha-app
-        version: v1
+        app: minha-app  # Rótulo que identifica os Pods
     spec:
       containers:
-      - name: app-container
-        image: nginx:alpine
+      - name: app-container        # Nome do container dentro do Pod
+        image: nginx:alpine        # Imagem Docker a usar (nginx é um servidor web simples)
         ports:
-        - containerPort: 80
-          name: http
-        # Health check - verifica se o container está saudável
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
+        - containerPort: 80         # Porta que o container usa
+          name: http                # Nome da porta
+        # Nota: Removemos health checks e resource limits para simplificar
+        # Você pode adicionar depois quando estiver mais confortável
 

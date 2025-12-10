@@ -4,7 +4,7 @@
 **Curso:** Tecnólogo em Sistemas para Internet  
 **Instituição:** IFTM - Campus Uberlândia Centro
 
-Este repositório contém um hands-on prático sobre **Docker** e **Kubernetes**, desenvolvido para o trabalho final de Sistemas Distribuídos.
+Este repositório contém um hands-on prático e **simplificado** sobre **Docker** e **Kubernetes**, desenvolvido para o trabalho final de Sistemas Distribuídos. Os exemplos foram criados pensando em iniciantes, com explicações detalhadas e passo a passo.
 
 ## 📋 Estrutura do Projeto
 
@@ -16,8 +16,7 @@ Este repositório contém um hands-on prático sobre **Docker** e **Kubernetes**
 │
 └── k8s/             # Hands-on prático sobre Kubernetes
     ├── deploy-basico/            # Deployment e Service básicos
-    ├── configmap-exemplo/        # Uso de ConfigMap
-    └── multi-container/          # Pod com múltiplos containers
+    └── configmap-exemplo/        # Uso de ConfigMap
 ```
 
 ## 🎯 Objetivos
